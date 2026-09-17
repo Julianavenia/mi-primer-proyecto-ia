@@ -1,13 +1,16 @@
 [project]
 name = "mi-primer-proyecto-ia"
 version = "0.1.0"
-description = "Add your description here"
+description = "Agente con tool use sobre la API de Anthropic (Claude), expuesto como app web con FastAPI."
 readme = "README.md"
 authors = [
     { name = "ELIZETH LUGO YEPES", email = "julianavenia@gmail.com" }
 ]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "anthropic>=1.6.0",
+    "pydantic-settings>=2.15.0",
+]
 
 [project.scripts]
 mi-primer-proyecto-ia = "mi_primer_proyecto_ia:main"
@@ -15,3 +18,21 @@ mi-primer-proyecto-ia = "mi_primer_proyecto_ia:main"
 [build-system]
 requires = ["uv_build>=0.12.15,<0.13.0"]
 build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "ruff>=0.16.8",
+]
