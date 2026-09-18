@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 from mi_primer_proyecto_ia.agent.fake_client import (
@@ -35,7 +37,7 @@ def test_run_agent_turn_executes_tool_and_returns_final_reply():
                     FakeToolUseBlock(
                         id="call_1",
                         name="calculator",
-                        input={"left": 12, "operator": "*", "right": 7},
+                        input={"expression": "12 * 7"},
                     )
                 ],
                 stop_reason="tool_use",
@@ -53,7 +55,7 @@ def test_run_agent_turn_executes_tool_and_returns_final_reply():
     tool_result_block = history[2]["content"][0]
     assert tool_result_block["type"] == "tool_result"
     assert tool_result_block["tool_use_id"] == "call_1"
-    assert tool_result_block["content"] == "84"
+    assert json.loads(tool_result_block["content"]) == {"expression": "12 * 7", "result": 84}
 
 
 def test_run_agent_turn_reports_error_for_unknown_tool():
@@ -85,7 +87,7 @@ def test_run_agent_turn_raises_after_max_iterations():
                 FakeToolUseBlock(
                     id=f"call_{i}",
                     name="calculator",
-                    input={"left": 1, "operator": "+", "right": 1},
+                    input={"expression": "1 + 1"},
                 )
             ],
             stop_reason="tool_use",
