@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+/*
+ * Sistema de diseño: tokens semánticos (no colores Tailwind crudos dispersos
+ * por los componentes). Cambiar la paleta o el modo oscuro se hace aquí, en
+ * un solo sitio. Convención de nombres inspirada en shadcn/ui (ampliamente
+ * reconocida): <token> + <token>-foreground para el texto que va encima.
+ */
+:root {
+  --background: #ffffff;
+  --foreground: #18181b;
+
+  --surface: #fafafa;
+  --surface-foreground: #18181b;
+
+  --muted: #f4f4f5;
+  --muted-foreground: #52525b;
+
+  --border: #e4e4e7;
+
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-foreground: #ffffff;
+
+  --success: #059669;
+  --success-subtle: #d1fae5;
+  --danger: #dc2626;
+  --danger-subtle: #fee2e2;
+  --warning: #d97706;
+  --warning-subtle: #fef3c7;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #09090b;
+    --foreground: #fafafa;
+
+    --surface: #18181b;
+    --surface-foreground: #fafafa;
+
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+
+    --border: #27272a;
+
+    --accent: #6366f1;
+    --accent-hover: #818cf8;
+    --accent-foreground: #ffffff;
+
+    --success: #34d399;
+    --success-subtle: #022c22;
+    --danger: #f87171;
+    --danger-subtle: #450a0a;
+    --warning: #fbbf24;
+    --warning-subtle: #451a03;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-border: var(--border);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-success: var(--success);
+  --color-success-subtle: var(--success-subtle);
+  --color-danger: var(--danger);
+  --color-danger-subtle: var(--danger-subtle);
+  --color-warning: var(--warning);
+  --color-warning-subtle: var(--warning-subtle);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Escala de radios del sistema (sm/md/lg) -- reemplaza el default de Tailwind. */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}

@@ -75,7 +75,26 @@ def test_post_chat_executes_tool_use_cycle():
     response = client.post("/chat", json={"message": "cuánto es 12 * 7"})
 
     assert response.status_code == 200
-    assert response.json()["reply"] == "El resultado es 84"
+    body = response.json()
+    assert body["reply"] == "El resultado es 84"
+    assert body["tool_calls"] == [
+        {
+            "name": "calculator",
+            "input": {"expression": "12 * 7"},
+            "result": '{"expression": "12 * 7", "result": 84}',
+            "is_error": False,
+        }
+    ]
+
+
+def test_post_chat_returns_empty_tool_calls_when_no_tool_is_used():
+    client = _client_with_script(
+        [FakeMessage(content=[FakeTextBlock(text="¡Hola!")], stop_reason="end_turn")]
+    )
+
+    response = client.post("/chat", json={"message": "hola"})
+
+    assert response.json()["tool_calls"] == []
 
 
 def test_post_chat_rejects_invalid_body():
