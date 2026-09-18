@@ -59,6 +59,30 @@ def _extract_expression_candidate(text: str) -> str | None:
     return None
 
 
+_READ_VERB_RE = re.compile(
+    r"\b(lee|leer|lea|abre|abrir|muestra|mostrar|read|open|show|cat|contenido)\b", re.IGNORECASE
+)
+_LIST_VERB_RE = re.compile(r"\b(lista|listar|listame|list|ls|archivos|files)\b", re.IGNORECASE)
+_PATH_ENDING_RE = re.compile(r"\.[A-Za-z]\w{0,4}$")
+
+
+def _extract_path_candidate(text: str) -> str | None:
+    """Primer token que "parece" una ruta: contiene '/' o termina en `.ext`.
+
+    No valida nada -- se pasa tal cual a `read_file`, y es el sandbox de
+    `tools/workspace.py` quien acepta o rechaza (así, "lee ../.env" muestra el
+    rechazo real). Este módulo nunca importa `tools/`.
+    """
+    for raw in text.split():
+        token = raw.strip("\"'`()[]{}").rstrip(".,;:!?")
+        # Sin letras (`//`, `12/3`, `1.5`) es aritmética, no una ruta.
+        if not re.search(r"[A-Za-z]", token):
+            continue
+        if "/" in token or _PATH_ENDING_RE.search(token):
+            return token
+    return None
+
+
 def _last_user_text(messages: list[dict[str, Any]]) -> str | None:
     for message in reversed(messages):
         if message["role"] == "user" and isinstance(message["content"], str):
@@ -95,6 +119,32 @@ def _display_result(tool_result_text: str) -> str:
     return tool_result_text
 
 
+_MAX_PREVIEW_CHARS = 400
+
+
+def _summarize_tool_result(tool_result_text: str) -> str:
+    """Frase del agente simulado según la forma del JSON devuelto por la tool."""
+    try:
+        payload = json.loads(tool_result_text)
+    except (json.JSONDecodeError, TypeError):
+        payload = None
+
+    if isinstance(payload, dict) and isinstance(payload.get("files"), list):
+        paths = [str(entry.get("path")) for entry in payload["files"] if isinstance(entry, dict)]
+        if not paths:
+            return "(simulado) No encontré archivos en el workspace."
+        suffix = " (lista truncada)" if payload.get("truncated") else ""
+        return f"(simulado) Encontré {len(paths)} archivo(s): {', '.join(paths)}{suffix}."
+
+    if isinstance(payload, dict) and "content" in payload:
+        content = str(payload["content"])
+        preview = content[:_MAX_PREVIEW_CHARS]
+        cut = " [...]" if len(content) > _MAX_PREVIEW_CHARS or payload.get("truncated") else ""
+        return f"(simulado) Contenido de {payload.get('path')}:\n{preview}{cut}"
+
+    return f"(simulado) El resultado es {_display_result(tool_result_text)}."
+
+
 class _FakeMessages:
     def __init__(self, script: list[FakeMessage] | None) -> None:
         self._script = list(script) if script is not None else None
@@ -120,16 +170,29 @@ class _FakeMessages:
         tool_result_text = _last_message_tool_result_text(messages)
         if tool_result_text is not None:
             return FakeMessage(
-                content=[
-                    FakeTextBlock(
-                        text=f"(simulado) El resultado es {_display_result(tool_result_text)}."
-                    )
-                ],
+                content=[FakeTextBlock(text=_summarize_tool_result(tool_result_text))],
                 stop_reason="end_turn",
             )
 
         user_text = _last_user_text(messages) or ""
-        candidate = _extract_expression_candidate(user_text)
+
+        # Intención de archivos ANTES que la de cálculo: un nombre como
+        # `datos-2024.csv` contiene '-' y dígitos y parecería una resta.
+        path = _extract_path_candidate(user_text)
+        if path and _READ_VERB_RE.search(user_text):
+            return FakeMessage(
+                content=[
+                    FakeToolUseBlock(id="fake_tool_use_1", name="read_file", input={"path": path})
+                ],
+                stop_reason="tool_use",
+            )
+        if not path and _LIST_VERB_RE.search(user_text):
+            return FakeMessage(
+                content=[FakeToolUseBlock(id="fake_tool_use_1", name="list_files", input={})],
+                stop_reason="tool_use",
+            )
+
+        candidate = None if path else _extract_expression_candidate(user_text)
         if candidate:
             return FakeMessage(
                 content=[
