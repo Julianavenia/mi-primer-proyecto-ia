@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { StatusPill } from "@/components/ui/StatusPill";
 import type { BackendStatus } from "@/hooks/useBackendStatus";
@@ -9,6 +10,7 @@ interface SidebarProps {
   activeConversationId: string;
   onSelectConversation: (id: string) => void;
   onCreateConversation: () => void;
+  onDeleteConversation: (id: string) => void;
   backendStatus: BackendStatus;
   /** Presente solo cuando el sidebar se muestra como drawer móvil. */
   onClose?: () => void;
@@ -19,6 +21,7 @@ export function Sidebar({
   activeConversationId,
   onSelectConversation,
   onCreateConversation,
+  onDeleteConversation,
   backendStatus,
   onClose,
 }: SidebarProps) {
@@ -26,7 +29,7 @@ export function Sidebar({
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between gap-2 px-4 py-4">
         <div>
-          <p className="text-sm font-semibold text-foreground">mi-primer-proyecto-ia</p>
+          <p className="text-base font-semibold text-foreground">mi-primer-proyecto-ia</p>
           <p className="text-xs text-muted-foreground">Agente con tool use</p>
         </div>
         {onClose && (
@@ -37,14 +40,10 @@ export function Sidebar({
       </div>
 
       <div className="px-3">
-        <button
-          type="button"
-          onClick={onCreateConversation}
-          className="flex w-full items-center gap-2 rounded-sm border border-border px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-        >
+        <Button variant="outline" onClick={onCreateConversation} className="w-full justify-start">
           <PlusIcon className="h-4 w-4" />
           Nueva conversación
-        </button>
+        </Button>
       </div>
 
       <nav aria-label="Conversaciones" className="mt-4 flex-1 overflow-y-auto px-3">
@@ -60,7 +59,8 @@ export function Sidebar({
                 <SidebarConversationItem
                   title={conversation.title}
                   active={conversation.id === activeConversationId}
-                  onClick={() => onSelectConversation(conversation.id)}
+                  onSelect={() => onSelectConversation(conversation.id)}
+                  onDelete={() => onDeleteConversation(conversation.id)}
                 />
               </li>
             ))}

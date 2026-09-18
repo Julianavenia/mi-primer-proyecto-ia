@@ -16,7 +16,7 @@ function formatResult(toolCall: ToolCallInfo): string {
 export function ToolUseBadge({ toolCall }: { toolCall: ToolCallInfo }) {
   return (
     <div
-      className={`flex max-w-full items-center gap-2 rounded-sm border px-2.5 py-1.5 font-mono text-xs ${
+      className={`flex max-w-full items-center gap-2 rounded-md border px-3 py-1.5 font-mono text-xs ${
         toolCall.is_error
           ? "border-danger-subtle bg-danger-subtle text-danger"
           : "border-border bg-muted text-muted-foreground"

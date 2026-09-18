@@ -25,16 +25,20 @@ export function MessageList({ messages, isLoading, onSelectSuggestion }: Message
 
   return (
     <div
-      className="flex flex-1 flex-col gap-4 overflow-y-auto px-4 py-6 sm:px-6"
+      className="flex flex-1 flex-col overflow-y-auto px-4 py-6 sm:px-6"
       role="log"
       aria-live="polite"
       aria-label="Historial de la conversación"
     >
-      {messages.map((message) => (
-        <MessageBubble key={message.id} message={message} />
-      ))}
-      {isLoading && <TypingIndicator />}
-      <div ref={bottomRef} />
+      {/* Columna de lectura con ancho máximo: en monitores anchos, el área de
+          chat no debe estirar las líneas de texto más allá de lo legible. */}
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+        {messages.map((message) => (
+          <MessageBubble key={message.id} message={message} />
+        ))}
+        {isLoading && <TypingIndicator />}
+        <div ref={bottomRef} />
+      </div>
     </div>
   );
 }

@@ -19,10 +19,13 @@ export function ChatWindow({ conversation, onUpdateConversation, backendOffline 
   const { isLoading, error, sendMessage } = useChat(conversation, onUpdateConversation);
   const [composerValue, setComposerValue] = useState("");
 
-  const bannerMessage =
+  const banner =
     error ??
     (backendOffline
-      ? "No se pudo conectar con el backend. Verifica que el servidor FastAPI esté corriendo."
+      ? {
+          message: "No se pudo conectar con el backend. Verifica que el servidor FastAPI esté corriendo.",
+          variant: "offline" as const,
+        }
       : null);
 
   return (
@@ -33,9 +36,9 @@ export function ChatWindow({ conversation, onUpdateConversation, backendOffline 
         onSelectSuggestion={setComposerValue}
       />
 
-      {bannerMessage && (
+      {banner && (
         <div className="px-4 pb-2 sm:px-6">
-          <ErrorBanner message={bannerMessage} />
+          <ErrorBanner message={banner.message} variant={banner.variant} />
         </div>
       )}
 

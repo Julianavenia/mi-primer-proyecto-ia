@@ -46,7 +46,7 @@ export function MessageInput({ value, onChange, onSend, disabled = false }: Mess
         rows={1}
         placeholder="Escribe un mensaje..."
         aria-label="Mensaje para el agente"
-        className="max-h-40 flex-1 resize-none rounded-sm border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
+        className="max-h-40 flex-1 resize-none rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground transition focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
       />
       <Button type="submit" disabled={disabled || !value.trim()}>
         {disabled ? <Spinner className="h-4 w-4" /> : "Enviar"}

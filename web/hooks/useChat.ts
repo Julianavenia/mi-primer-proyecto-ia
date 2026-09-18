@@ -1,14 +1,30 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import type { ErrorVariant } from "@/components/chat/ErrorBanner";
 import { ApiError, postChat } from "@/lib/api";
 import type { ChatMessage, Conversation } from "@/lib/types";
 import { deriveTitle } from "./useConversations";
 
+export interface ChatError {
+  message: string;
+  variant: ErrorVariant;
+}
+
 interface UseChatResult {
   isLoading: boolean;
-  error: string | null;
+  error: ChatError | null;
   sendMessage: (text: string) => Promise<void>;
+}
+
+function toChatError(err: unknown): ChatError {
+  if (!(err instanceof ApiError)) {
+    return { message: "Ocurrió un error inesperado.", variant: "unknown" };
+  }
+  if (err.status === undefined) return { message: err.message, variant: "offline" };
+  if (err.status === 422) return { message: err.message, variant: "validation" };
+  if (err.status === 502) return { message: err.message, variant: "agent" };
+  return { message: err.message, variant: "unknown" };
 }
 
 /**
@@ -22,7 +38,7 @@ export function useChat(
   onUpdate: (updater: (conversation: Conversation) => Conversation) => void,
 ): UseChatResult {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ChatError | null>(null);
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -55,7 +71,7 @@ export function useChat(
           messages: [...current.messages, assistantMessage],
         }));
       } catch (err) {
-        setError(err instanceof ApiError ? err.message : "Ocurrió un error inesperado.");
+        setError(toChatError(err));
       } finally {
         setIsLoading(false);
       }

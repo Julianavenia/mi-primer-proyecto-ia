@@ -17,6 +17,7 @@ export function AppShell() {
     activeConversation,
     createConversation,
     selectConversation,
+    deleteConversation,
     updateActiveConversation,
   } = useConversations();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -39,6 +40,7 @@ export function AppShell() {
           activeConversationId={activeConversation.id}
           onSelectConversation={handleSelectConversation}
           onCreateConversation={handleCreateConversation}
+          onDeleteConversation={deleteConversation}
           backendStatus={backendStatus}
         />
       </aside>
@@ -53,6 +55,7 @@ export function AppShell() {
           activeConversationId={activeConversation.id}
           onSelectConversation={handleSelectConversation}
           onCreateConversation={handleCreateConversation}
+          onDeleteConversation={deleteConversation}
           backendStatus={backendStatus}
           onClose={() => setMobileMenuOpen(false)}
         />

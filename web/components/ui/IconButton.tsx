@@ -13,7 +13,7 @@ export function IconButton({ label, className = "", children, ...props }: IconBu
       type="button"
       aria-label={label}
       title={label}
-      className={`inline-flex h-9 w-9 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition active:scale-[0.98] hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100 ${className}`}
       {...props}
     >
       {children}

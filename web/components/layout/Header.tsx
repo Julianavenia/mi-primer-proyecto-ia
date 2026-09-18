@@ -15,7 +15,7 @@ export function Header({ title, backendStatus, onOpenMenu }: HeaderProps) {
         <IconButton label="Abrir menú" onClick={onOpenMenu} className="lg:hidden">
           <MenuIcon className="h-5 w-5" />
         </IconButton>
-        <h1 className="truncate text-sm font-medium text-foreground">{title}</h1>
+        <h1 className="truncate text-base font-semibold text-foreground">{title}</h1>
       </div>
       <div className="lg:hidden">
         <StatusPill status={backendStatus} />

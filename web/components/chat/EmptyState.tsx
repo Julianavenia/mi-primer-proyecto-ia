@@ -17,7 +17,7 @@ export function EmptyState({ onSelectSuggestion }: EmptyStateProps) {
           Este agente puede usar herramientas para resolver tareas. Prueba con un cálculo.
         </p>
       </div>
-      <div className="grid w-full max-w-sm gap-2">
+      <div className="grid w-full max-w-md grid-cols-1 gap-2 sm:grid-cols-2">
         {SUGGESTIONS.map((suggestion) => (
           <SuggestionChip
             key={suggestion}
